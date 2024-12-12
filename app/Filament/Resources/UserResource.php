@@ -6,7 +6,10 @@ use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
+use Filament\Forms\Components\Livewire;
 use Filament\Forms\Form;
+use Filament\Pages\Page;
+use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -23,7 +26,27 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                ->label('name')
+                ->required(),
+
+                Forms\Components\TextInput::make('email')
+                ->label('Email')
+                ->email()
+                ->maxLength(255)
+                ->unique(ignoreRecord: true)
+                ->required(),
+
+                Forms\Components\DateTimePicker::make('email_verified_at')
+                ->label('Email Verified At ')
+                ->default(now()),
+
+                Forms\Components\TextInput::make('password')
+                ->password()
+                ->dehydrated(fn($state) => filled($state) )
+                ->required(fn(Page $livewire): bool => $livewire instanceof CreateRecord ),
+
+
             ]);
     }
 
@@ -31,13 +54,34 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')
+                ->searchable(),
+
+                Tables\Columns\TextColumn::make('email')
+                ->searchable(),
+
+                Tables\Columns\TextColumn::make('email_verified_at')
+                ->dateTime()
+                ->sortable(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                ->dateTime()
+                ->sortable()
+
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Tables\Actions\ActionGroup::make([
+                    
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+
+                ])
+
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

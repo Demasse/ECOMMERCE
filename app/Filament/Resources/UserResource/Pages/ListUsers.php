@@ -12,6 +12,7 @@ class ListUsers extends ListRecords
 
     protected function getHeaderActions(): array
     {
+        // die;
         return [
             Actions\CreateAction::make(),
         ];
